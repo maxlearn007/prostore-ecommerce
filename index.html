@@ -3,181 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProStore | E-commerce with Admin Dashboard</title>
+    <title>ProStore | E-commerce</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://d3js.org/d3.v7.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Inter', sans-serif; }
-        body { background-color: #f9fafb; }
-        .hero-section {
-            background: linear-gradient(135deg, #0b2b40 0%, #1a4a5f 100%);
-            min-height: 50vh;
-            border-radius: 0 0 2rem 2rem;
-        }
-        .card {
-            transition: transform 0.2s ease;
-            border-radius: 1.25rem;
-            overflow: hidden;
-        }
-        .card:hover { transform: translateY(-6px); }
-        .card-img-top { height: 200px; object-fit: cover; }
-        .analysis-box { background: #f8fafc; border-radius: 1rem; padding: 0.7rem; }
-        .cookie-banner {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(15, 23, 42, 0.95);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 40px;
-            font-size: 0.85rem;
-            z-index: 1100;
-            backdrop-filter: blur(8px);
-        }
-        .admin-link {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            z-index: 1100;
-        }
+        body { background: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .hero { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 60px 0; margin-bottom: 40px; }
+        .card { transition: transform 0.3s; border-radius: 15px; overflow: hidden; }
+        .card:hover { transform: translateY(-5px); }
+        .admin-btn { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
+        .cookie-banner { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a2e; color: white; padding: 15px; text-align: center; z-index: 1001; }
     </style>
 </head>
 <body>
-
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="hero text-center">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">PRO<span class="text-primary">STORE</span></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Products</a></li>
-                    <li class="nav-item"><a class="nav-link btn btn-primary btn-sm text-white ms-lg-3 px-3" href="#">Cart (<span id="cart-count">0</span>)</a></li>
-                </ul>
-            </div>
+            <h1>🛍️ ProStore</h1>
+            <p class="lead">Premium products with real-time analytics</p>
+            <a href="#shop" class="btn btn-light btn-lg">Shop Now</a>
         </div>
-    </nav>
-
-    <header class="hero-section text-white text-center d-flex align-items-center">
-        <div class="container">
-            <h1 class="display-4 fw-bold">Smart Shopping</h1>
-            <p class="lead">Premium tech with real-time insights</p>
-            <a href="#shop" class="btn btn-primary btn-lg px-5 mt-3 shadow">Shop Now</a>
-        </div>
-    </header>
-
-    <main class="container my-5" id="shop">
-        <h2 class="text-center fw-bold mb-5">Featured Products</h2>
-        <div class="row g-4">
-            <div class="col-lg-4 col-md-6">
-                <div class="card" data-product-id="1" data-product-name="Smart Watch" data-product-price="199">
-                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=500&q=80" class="card-img-top" alt="Smart Watch">
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Premium Smart Watch</h5>
-                        <p class="h4 fw-bold text-dark">$199</p>
-                        <button class="btn btn-outline-dark w-100 add-to-cart">Add to Cart</button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="card" data-product-id="2" data-product-name="Headphones" data-product-price="299">
-                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80" class="card-img-top" alt="Headphones">
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Wireless Headphones</h5>
-                        <p class="h4 fw-bold text-dark">$299</p>
-                        <button class="btn btn-outline-dark w-100 add-to-cart">Add to Cart</button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="card" data-product-id="3" data-product-name="Camera" data-product-price="549">
-                    <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=500&q=80" class="card-img-top" alt="Camera">
-                    <div class="card-body text-center">
-                        <h5 class="card-title fw-bold">Retro 4K Camera</h5>
-                        <p class="h4 fw-bold text-dark">$549</p>
-                        <button class="btn btn-outline-dark w-100 add-to-cart">Add to Cart</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Admin Dashboard Link -->
-    <div class="admin-link">
-        <a href="/admin" class="btn btn-dark btn-sm shadow" target="_blank">📊 Admin Dashboard</a>
     </div>
 
-    <div id="cookieConsent" style="position: fixed; bottom: 0; left: 0; right: 0; background: #0f172a; color: white; padding: 1rem; z-index: 10000; text-align: center;">
-        <p>We collect data to improve your experience. <button class="btn btn-primary btn-sm" onclick="acceptTracking()">Accept</button></p>
+    <div class="container" id="shop">
+        <h2 class="text-center mb-4">Featured Products</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card" data-product="Smart Watch" data-price="199">
+                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400" class="card-img-top" alt="Smart Watch">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Premium Smart Watch</h5>
+                        <p class="h4">$199</p>
+                        <button class="btn btn-primary add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card" data-product="Headphones" data-price="299">
+                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400" class="card-img-top" alt="Headphones">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Wireless Headphones</h5>
+                        <p class="h4">$299</p>
+                        <button class="btn btn-primary add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card" data-product="Camera" data-price="549">
+                    <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400" class="card-img-top" alt="Camera">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">4K Camera</h5>
+                        <p class="h4">$549</p>
+                        <button class="btn btn-primary add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="/admin" class="btn btn-dark admin-btn" target="_blank">📊 Admin Dashboard</a>
+
+    <div id="cookieBanner" class="cookie-banner">
+        <p>We collect anonymous data to improve your experience. <button class="btn btn-primary btn-sm" onclick="acceptTracking()">Accept</button></p>
     </div>
 
     <script>
         let trackingEnabled = false;
-        let userId = null;
+        let userId = localStorage.getItem('userId') || 'user_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('userId', userId);
 
-        function generateUUID() {
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                const r = Math.random() * 16 | 0;
-                const v = c === 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
-        }
-
-        async function sendToBackend(data) {
+        async function sendData(data) {
             try {
                 await fetch('/api/track', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
                 });
-            } catch(e) { console.log('Backend not ready yet'); }
+            } catch(e) { console.log('Error sending data'); }
         }
 
-        async function collectAndSendData() {
-            if (!trackingEnabled) return;
+        async function acceptTracking() {
+            trackingEnabled = true;
+            document.getElementById('cookieBanner').style.display = 'none';
             
-            userId = localStorage.getItem('userId') || generateUUID();
-            localStorage.setItem('userId', userId);
-            
-            // Get IP and location
+            // Get IP info
             let ipData = {};
             try {
                 const res = await fetch('https://ipapi.co/json/');
                 ipData = await res.json();
             } catch(e) {}
             
-            const data = {
+            await sendData({
                 userId: userId,
                 timestamp: new Date().toISOString(),
                 ip: ipData.ip,
                 location: {
                     city: ipData.city,
-                    country: ipData.country_name,
-                    region: ipData.region
+                    country: ipData.country_name
                 },
                 device: {
                     browser: navigator.userAgent,
-                    screen: `${screen.width}x${screen.height}`,
-                    language: navigator.language,
-                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                    screen: screen.width + 'x' + screen.height,
+                    language: navigator.language
                 },
-                page: window.location.pathname,
-                referrer: document.referrer
-            };
-            
-            await sendToBackend(data);
+                page: window.location.pathname
+            });
         }
 
-        window.acceptTracking = function() {
-            trackingEnabled = true;
-            document.getElementById('cookieConsent').style.display = 'none';
-            collectAndSendData();
-        };
-
-        // Cart tracking
         document.querySelectorAll('.add-to-cart').forEach(btn => {
             btn.addEventListener('click', async () => {
                 if (!trackingEnabled) {
@@ -187,8 +117,8 @@
                 const card = btn.closest('.card');
                 const product = {
                     userId: userId,
-                    productName: card.dataset.productName,
-                    productPrice: card.dataset.productPrice,
+                    productName: card.dataset.product,
+                    productPrice: card.dataset.price,
                     action: 'add_to_cart',
                     timestamp: new Date().toISOString()
                 };
