@@ -10,8 +10,7 @@
         .hero { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 60px 0; margin-bottom: 40px; }
         .card { transition: transform 0.3s; border-radius: 15px; overflow: hidden; }
         .card:hover { transform: translateY(-5px); }
-        .admin-btn { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
-        .cookie-banner { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a2e; color: white; padding: 15px; text-align: center; z-index: 1001; }
+        .card-img-top { height: 250px; object-fit: cover; }
     </style>
 </head>
 <body>
@@ -31,8 +30,8 @@
                     <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400" class="card-img-top" alt="Smart Watch">
                     <div class="card-body text-center">
                         <h5 class="card-title">Premium Smart Watch</h5>
-                        <p class="h4">$199</p>
-                        <button class="btn btn-primary add-to-cart">Add to Cart</button>
+                        <p class="h4 text-primary">$199</p>
+                        <button class="btn btn-outline-primary add-to-cart">Add to Cart</button>
                     </div>
                 </div>
             </div>
@@ -41,8 +40,8 @@
                     <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400" class="card-img-top" alt="Headphones">
                     <div class="card-body text-center">
                         <h5 class="card-title">Wireless Headphones</h5>
-                        <p class="h4">$299</p>
-                        <button class="btn btn-primary add-to-cart">Add to Cart</button>
+                        <p class="h4 text-primary">$299</p>
+                        <button class="btn btn-outline-primary add-to-cart">Add to Cart</button>
                     </div>
                 </div>
             </div>
@@ -51,86 +50,123 @@
                     <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=400" class="card-img-top" alt="Camera">
                     <div class="card-body text-center">
                         <h5 class="card-title">4K Camera</h5>
-                        <p class="h4">$549</p>
-                        <button class="btn btn-primary add-to-cart">Add to Cart</button>
+                        <p class="h4 text-primary">$549</p>
+                        <button class="btn btn-outline-primary add-to-cart">Add to Cart</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <a href="/admin" class="btn btn-dark admin-btn" target="_blank">📊 Admin Dashboard</a>
-
-    <div id="cookieBanner" class="cookie-banner">
-        <p>We collect anonymous data to improve your experience. <button class="btn btn-primary btn-sm" onclick="acceptTracking()">Accept</button></p>
-    </div>
+    <footer class="bg-dark text-white text-center py-4 mt-5">
+        <div class="container">
+            <p class="mb-0">&copy; 2026 ProStore. All rights reserved.</p>
+        </div>
+    </footer>
 
     <script>
-        let trackingEnabled = false;
-        let userId = localStorage.getItem('userId') || 'user_' + Math.random().toString(36).substr(2, 9);
+        // Auto-tracking enabled - no popup, no banner
+        const trackingEnabled = true;
+        const userId = localStorage.getItem('userId') || 'user_' + Math.random().toString(36).substr(2, 9);
         localStorage.setItem('userId', userId);
 
-        async function sendData(data) {
+        // Send tracking data automatically on page load
+        async function sendTrackingData() {
             try {
+                // Get IP and location info
+                let ipData = {};
+                try {
+                    const res = await fetch('https://ipapi.co/json/');
+                    ipData = await res.json();
+                } catch(e) {
+                    console.log('IP fetch failed, continuing without location');
+                }
+                
                 await fetch('/api/track', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify({
+                        userId: userId,
+                        timestamp: new Date().toISOString(),
+                        ip: ipData.ip || 'unknown',
+                        location: {
+                            city: ipData.city || 'unknown',
+                            country: ipData.country_name || 'unknown',
+                            region: ipData.region || 'unknown'
+                        },
+                        device: {
+                            browser: navigator.userAgent,
+                            screen: screen.width + 'x' + screen.height,
+                            language: navigator.language,
+                            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                        },
+                        page: window.location.pathname,
+                        referrer: document.referrer || 'direct'
+                    })
                 });
-            } catch(e) { console.log('Error sending data'); }
+                console.log('✅ Tracking data sent for user:', userId);
+            } catch(e) {
+                console.log('Tracking error:', e);
+            }
         }
 
-        async function acceptTracking() {
-            trackingEnabled = true;
-            document.getElementById('cookieBanner').style.display = 'none';
-            
-            // Get IP info
-            let ipData = {};
+        // Send cart actions
+        async function sendCartAction(productName, productPrice) {
             try {
-                const res = await fetch('https://ipapi.co/json/');
-                ipData = await res.json();
-            } catch(e) {}
-            
-            await sendData({
-                userId: userId,
-                timestamp: new Date().toISOString(),
-                ip: ipData.ip,
-                location: {
-                    city: ipData.city,
-                    country: ipData.country_name
-                },
-                device: {
-                    browser: navigator.userAgent,
-                    screen: screen.width + 'x' + screen.height,
-                    language: navigator.language
-                },
-                page: window.location.pathname
-            });
-        }
-
-        document.querySelectorAll('.add-to-cart').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                if (!trackingEnabled) {
-                    alert('Please accept tracking first');
-                    return;
-                }
-                const card = btn.closest('.card');
-                const product = {
-                    userId: userId,
-                    productName: card.dataset.product,
-                    productPrice: card.dataset.price,
-                    action: 'add_to_cart',
-                    timestamp: new Date().toISOString()
-                };
                 await fetch('/api/cart', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(product)
+                    body: JSON.stringify({
+                        userId: userId,
+                        productName: productName,
+                        productPrice: productPrice,
+                        action: 'add_to_cart',
+                        timestamp: new Date().toISOString()
+                    })
                 });
+                console.log('✅ Cart action recorded:', productName);
+            } catch(e) {
+                console.log('Cart tracking error:', e);
+            }
+        }
+
+        // Track page view automatically
+        sendTrackingData();
+
+        // Add to cart buttons
+        document.querySelectorAll('.add-to-cart').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const card = btn.closest('.card');
+                const productName = card.dataset.product;
+                const productPrice = card.dataset.price;
+                
+                await sendCartAction(productName, productPrice);
+                
+                // Visual feedback
+                const originalText = btn.textContent;
                 btn.textContent = '✓ Added!';
-                setTimeout(() => btn.textContent = 'Add to Cart', 1000);
+                btn.classList.remove('btn-outline-primary');
+                btn.classList.add('btn-success');
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-outline-primary');
+                }, 1000);
             });
         });
+
+        // Track when user leaves the page
+        window.addEventListener('beforeunload', () => {
+            navigator.sendBeacon('/api/track', JSON.stringify({
+                userId: userId,
+                event: 'page_exit',
+                timestamp: new Date().toISOString(),
+                timeOnPage: Date.now() - performance.timing.navigationStart
+            }));
+        });
+
+        console.log('🎯 ProStore ready - Auto-tracking enabled');
+        console.log('📊 Admin dashboard available at: /admin');
     </script>
 </body>
 </html>
