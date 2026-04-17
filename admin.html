@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #0a0e27; color: white; }
+        .card-dash { background: #1a1f3e; border-radius: 15px; padding: 20px; margin-bottom: 20px; }
+        .stat-number { font-size: 2.5rem; font-weight: bold; color: #4f46e5; }
+        .table { color: white; }
+        .table-container { background: #1a1f3e; border-radius: 15px; padding: 20px; margin-top: 20px; }
+        .refresh-btn { position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <h1 class="mb-4">📊 ProStore Admin Dashboard</h1>
+        
+        <div class="row" id="stats">
+            <div class="col-md-3">
+                <div class="card-dash">
+                    <h5>Total Users</h5>
+                    <div class="stat-number" id="totalUsers">-</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card-dash">
+                    <h5>Total Visits</h5>
+                    <div class="stat-number" id="totalVisits">-</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card-dash">
+                    <h5>Cart Actions</h5>
+                    <div class="stat-number" id="cartActions">-</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card-dash">
+                    <h5>Active (24h)</h5>
+                    <div class="stat-number" id="activeUsers">-</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <h5>👥 All Users</h5>
+            <div class="table-responsive">
+                <table class="table table-dark">
+                    <thead>
+                        <tr><th>User ID</th><th>First Seen</th><th>Last Seen</th><th>Visits</th><th>Location</th><th>IP</th></tr>
+                    </thead>
+                    <tbody id="usersTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="table-container mt-4">
+            <h5>🛒 Recent Cart Activity</h5>
+            <div class="table-responsive">
+                <table class="table table-dark">
+                    <thead><tr><th>User ID</th><th>Product</th><th>Price</th><th>Time</th></tr></thead>
+                    <tbody id="cartsTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-primary refresh-btn" onclick="loadData()">🔄 Refresh</button>
+
+    <script>
+        async function loadData() {
+            try {
+                // Load stats
+                const statsRes = await fetch('/api/stats');
+                const stats = await statsRes.json();
+                document.getElementById('totalUsers').innerText = stats.totalUsers;
+                document.getElementById('totalVisits').innerText = stats.totalVisits;
+                document.getElementById('cartActions').innerText = stats.totalCartActions;
+                document.getElementById('activeUsers').innerText = stats.visitsLast24h;
+
+                // Load users
+                const usersRes = await fetch('/api/users');
+                const users = await usersRes.json();
+                document.getElementById('usersTable').innerHTML = users.map(u => `
+                    <tr>
+                        <td><small>${u.userId?.substring(0, 12)}...</small></td>
+                        <td><small>${new Date(u.firstSeen).toLocaleString()}</small></td>
+                        <td><small>${new Date(u.lastSeen).toLocaleString()}</small></td>
+                        <td>${u.visitCount}</td>
+                        <td>${u.location?.city || 'Unknown'}, ${u.location?.country || 'Unknown'}</td>
+                        <td>${u.ip || 'Unknown'}</td>
+                    </tr>
+                `).join('');
+
+                // Load carts
+                const cartsRes = await fetch('/api/carts');
+                const carts = await cartsRes.json();
+                document.getElementById('cartsTable').innerHTML = carts.slice().reverse().slice(0, 20).map(c => `
+                    <tr>
+                        <td><small>${c.userId?.substring(0, 12)}...</small></td>
+                        <td>${c.productName}</td>
+                        <td>$${c.productPrice}</td>
+                        <td><small>${new Date(c.timestamp).toLocaleString()}</small></td>
+                    </tr>
+                `).join('');
+            } catch(e) {
+                console.error('Error loading data:', e);
+            }
+        }
+
+        loadData();
+        setInterval(loadData, 30000);
+    </script>
+</body>
+</html>
