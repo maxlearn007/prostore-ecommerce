@@ -1,0 +1,79 @@
+/* General Layout */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8fafc;
+    color: #0f172a;
+}
+
+/* Hero Banner */
+.hero-section {
+    background: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), 
+                url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1500&q=80');
+    background-size: cover;
+    background-position: center;
+    height: 45vh;
+}
+
+/* Product Cards */
+.card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+}
+
+.card-img-top {
+    height: 220px;
+    object-fit: cover;
+}
+
+/* Data Analysis Section */
+.analysis-box {
+    background: #f1f5f9;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+/* Live Feed Toast */
+.live-feed-toast {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    background: #ffffff;
+    padding: 12px 20px;
+    border-radius: 50px;
+    z-index: 2000;
+    width: auto;
+    min-width: 260px;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform: translateX(-150%);
+    opacity: 0;
+    border: 1px solid #e2e8f0;
+}
+
+.live-feed-toast.show-feed {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.x-small {
+    font-size: 0.75rem;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #2563eb;
+    border-radius: 12px;
+    font-weight: 600;
+    border: none;
+}
+
+.btn-outline-dark {
+    border-radius: 12px;
+    border-width: 2px;
+}

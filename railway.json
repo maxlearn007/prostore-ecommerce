@@ -1,0 +1,11 @@
+{
+  "build": {
+    "builder": "NIXPACKS"
+  },
+  "nixpacks": {
+    "platform": "static",
+    "static": {
+      "publishDir": "."
+    }
+  }
+}
