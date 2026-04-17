@@ -3,11 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProStore | Interactive E-commerce</title>
+    <title>ProStore | Interactive E-commerce with Cookie Tracking</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        body {
+            background-color: #f9fafb;
+        }
+        .hero-section {
+            background: linear-gradient(135deg, #0b2b40 0%, #1a4a5f 100%);
+            min-height: 60vh;
+            border-radius: 0 0 2rem 2rem;
+            margin-bottom: 2rem;
+        }
+        .card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border-radius: 1.25rem;
+            overflow: hidden;
+        }
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 1.5rem 2rem rgba(0,0,0,0.1) !important;
+        }
+        .card-img-top {
+            height: 220px;
+            object-fit: cover;
+        }
+        .analysis-box {
+            background: #f8fafc;
+            border-radius: 1rem;
+            padding: 0.7rem;
+            margin: 0.5rem 0;
+        }
+        .live-feed-toast {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            width: 320px;
+            background: white;
+            border-radius: 2rem;
+            padding: 12px 18px;
+            z-index: 1060;
+            transition: opacity 0.3s ease, transform 0.25s ease;
+            opacity: 0;
+            transform: translateX(-30px);
+            border-left: 5px solid #0d6efd;
+            box-shadow: 0 20px 30px -12px rgba(0,0,0,0.2);
+        }
+        .live-feed-toast.show-feed {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .x-small {
+            font-size: 0.75rem;
+        }
+        .cookie-banner {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1e293b;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            z-index: 1100;
+            backdrop-filter: blur(8px);
+            background: rgba(15, 23, 42, 0.9);
+            font-weight: 500;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+            pointer-events: none;
+        }
+        .btn-outline-dark {
+            border-radius: 40px;
+        }
+        .btn-primary {
+            border-radius: 40px;
+        }
+        footer {
+            border-top: 1px solid #2d3a46;
+        }
+        .badge.bg-primary {
+            background: #0d6efd !important;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            border-radius: 40px;
+        }
+        .cookie-debug {
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 30px;
+            border: 1px solid #e2e8f0;
+        }
+        .cookie-debug pre {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 12px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
 
@@ -21,7 +122,7 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Products</a></li>
-                    <li class="nav-item"><a class="nav-link btn btn-primary btn-sm text-white ms-lg-3 px-3" href="#">Cart (0)</a></li>
+                    <li class="nav-item"><a class="nav-link btn btn-primary btn-sm text-white ms-lg-3 px-3" href="#">Cart (<span id="cart-count">0</span>)</a></li>
                 </ul>
             </div>
         </div>
@@ -39,8 +140,9 @@
         <h2 class="text-center fw-bold mb-5">Featured Products</h2>
         
         <div class="row g-4">
+            <!-- Product 1: Smart Watch -->
             <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm">
+                <div class="card h-100 border-0 shadow-sm" data-product-id="1" data-product-name="Premium Smart Watch" data-product-price="199.00">
                     <div class="badge bg-primary position-absolute" style="top: 0.8rem; right: 0.8rem">Best Deal</div>
                     <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=500&q=80" class="card-img-top" alt="Smart Watch">
                     <div class="card-body text-center">
@@ -50,13 +152,14 @@
                             <div id="price-chart"></div>
                         </div>
                         <p class="h4 fw-bold text-dark mt-3">$199.00</p>
-                        <button class="btn btn-outline-dark w-100 mt-2">Add to Cart</button>
+                        <button class="btn btn-outline-dark w-100 mt-2 add-to-cart-btn">Add to Cart</button>
                     </div>
                 </div>
             </div>
 
+            <!-- Product 2: Headphones -->
             <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm">
+                <div class="card h-100 border-0 shadow-sm" data-product-id="2" data-product-name="Wireless Headphones" data-product-price="299.00">
                     <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80" class="card-img-top" alt="Headphones">
                     <div class="card-body text-center">
                         <h5 class="card-title fw-bold">Wireless Headphones</h5>
@@ -65,13 +168,14 @@
                             <div id="stock-bar-1"></div>
                         </div>
                         <p class="h4 fw-bold text-dark mt-3">$299.00</p>
-                        <button class="btn btn-outline-dark w-100 mt-2">Add to Cart</button>
+                        <button class="btn btn-outline-dark w-100 mt-2 add-to-cart-btn">Add to Cart</button>
                     </div>
                 </div>
             </div>
 
+            <!-- Product 3: Camera -->
             <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm">
+                <div class="card h-100 border-0 shadow-sm" data-product-id="3" data-product-name="Retro 4K Camera" data-product-price="549.00">
                     <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=500&q=80" class="card-img-top" alt="Camera">
                     <div class="card-body text-center">
                         <h5 class="card-title fw-bold">Retro 4K Camera</h5>
@@ -80,16 +184,27 @@
                             <div id="stock-bar-2"></div>
                         </div>
                         <p class="h4 fw-bold text-dark mt-3">$549.00</p>
-                        <button class="btn btn-outline-dark w-100 mt-2">Add to Cart</button>
+                        <button class="btn btn-outline-dark w-100 mt-2 add-to-cart-btn">Add to Cart</button>
                     </div>
                 </div>
             </div>
+        </div>
+        
+        <!-- Cookie Debug Panel - Shows your current cookie data -->
+        <div class="cookie-debug">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">🍪 Your Cookie Data (Live)</h5>
+                <button class="btn btn-sm btn-primary" onclick="refreshCookieDisplay()">Refresh</button>
+            </div>
+            <pre id="cookie-content">Loading cookie data...</pre>
+            <small class="text-muted">This cookie persists for 365 days and tracks your visits, cart items, and unique ID</small>
         </div>
     </main>
 
     <footer class="bg-dark text-secondary py-5 mt-5">
         <div class="container text-center">
             <p>&copy; 2026 ProStore Online. Created with Bootstrap, CSS, and D3.js</p>
+            <p class="small">🔐 Persistent cookie stores user journey • Open DevTools (F12) → Application → Cookies to see raw data</p>
         </div>
     </footer>
 
@@ -105,10 +220,142 @@
         </div>
     </div>
 
+    <!-- Cookie notification banner -->
+    <div id="cookieToast" class="cookie-banner">
+        🍪 Your unique cookie has been saved!
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // --- 1. D3 PRICE CHART ---
+        // ========================
+        //  COMPLETE COOKIE SYSTEM - Save cookie for EVERY user
+        // ========================
+
+        // Helper: get cookie value by name
+        function getCookie(name) {
+            const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+            return match ? decodeURIComponent(match[2]) : null;
+        }
+
+        // Helper: set cookie with extended options
+        function setCookie(name, value, days = 365) {
+            const maxAge = days * 24 * 60 * 60;
+            const cookieValue = encodeURIComponent(value);
+            document.cookie = `${name}=${cookieValue}; max-age=${maxAge}; path=/; SameSite=Lax`;
+        }
+
+        // Generate UUID for unique user identification
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // Initialize or retrieve user cookie
+        let userData;
+        const now = new Date().toISOString();
+        const existingCookie = getCookie('prostore_user_data');
+
+        if (!existingCookie) {
+            // New user
+            userData = {
+                visitorId: generateUUID(),
+                firstVisit: now,
+                lastVisit: now,
+                totalVisits: 1,
+                cartActions: [],
+                totalCartItems: 0
+            };
+            console.log('🆕 New user created with ID:', userData.visitorId);
+            document.getElementById('cookieToast').innerHTML = '🍪 Welcome! Your unique cookie has been created.';
+        } else {
+            // Returning user
+            try {
+                userData = JSON.parse(existingCookie);
+                userData.lastVisit = now;
+                userData.totalVisits = (userData.totalVisits || 0) + 1;
+                console.log('🔄 Returning user:', userData.visitorId, 'Visit #:', userData.totalVisits);
+                document.getElementById('cookieToast').innerHTML = `🍪 Welcome back! You've visited ${userData.totalVisits} times.`;
+            } catch(e) {
+                console.error('Error parsing cookie', e);
+                userData = {
+                    visitorId: generateUUID(),
+                    firstVisit: now,
+                    lastVisit: now,
+                    totalVisits: 1,
+                    cartActions: [],
+                    totalCartItems: 0
+                };
+            }
+        }
+
+        // Ensure required properties exist
+        if (!userData.cartActions) userData.cartActions = [];
+        if (typeof userData.totalCartItems !== 'number') userData.totalCartItems = 0;
+
+        // Save cookie function
+        function persistUserCookie() {
+            setCookie('prostore_user_data', JSON.stringify(userData), 365);
+            updateCartDisplay();
+            refreshCookieDisplay();
+        }
+
+        // Update cart count in navbar
+        function updateCartDisplay() {
+            const cartCountSpan = document.getElementById('cart-count');
+            if (cartCountSpan) {
+                cartCountSpan.innerText = userData.totalCartItems || 0;
+            }
+        }
+
+        // Record cart action in cookie
+        window.recordCartAction = function(productName, productPrice, actionType = 'add') {
+            const cartEntry = {
+                timestamp: new Date().toISOString(),
+                product: productName,
+                price: productPrice,
+                action: actionType
+            };
+            userData.cartActions.push(cartEntry);
+            if (actionType === 'add') {
+                userData.totalCartItems = (userData.totalCartItems || 0) + 1;
+            }
+            // Keep last 50 actions
+            if (userData.cartActions.length > 50) userData.cartActions.shift();
+            persistUserCookie();
+            console.log(`🛒 Cart updated: ${productName} added. Total items: ${userData.totalCartItems}`);
+        };
+
+        // Display cookie data in debug panel
+        window.refreshCookieDisplay = function() {
+            const cookieValue = getCookie('prostore_user_data');
+            const debugPre = document.getElementById('cookie-content');
+            if (cookieValue) {
+                try {
+                    const parsed = JSON.parse(cookieValue);
+                    debugPre.innerHTML = JSON.stringify(parsed, null, 2);
+                } catch(e) {
+                    debugPre.innerHTML = 'Error parsing cookie: ' + e.message;
+                }
+            } else {
+                debugPre.innerHTML = 'No cookie found. Refresh page or add items to cart.';
+            }
+        };
+
+        // Initial save and display
+        persistUserCookie();
+
+        // Expose for debugging
+        window.getUserCookieInfo = function() { return userData; };
+
+        // ------------------------------
+        // D3.js VISUAL COMPONENTS
+        // ------------------------------
+        
+        // Price chart
         const priceData = [260, 245, 250, 220, 210, 199];
         const pW = 300, pH = 60;
         const pSvg = d3.select("#price-chart").append("svg").attr("width", "100%").attr("viewBox", `0 0 ${pW} ${pH}`);
@@ -118,44 +365,92 @@
         
         pSvg.append("path").datum(priceData).attr("fill", "none").attr("stroke", "#0d6efd").attr("stroke-width", 3).attr("d", pLine);
         pSvg.append("circle").attr("cx", px(5)).attr("cy", py(199)).attr("r", 4).attr("fill", "#0d6efd");
+        pSvg.append("text").attr("x", px(5) + 8).attr("y", py(199) - 4).attr("font-size", "8px").attr("fill", "#0d6efd").attr("font-weight", "bold").text("$199");
 
-        // --- 2. D3 REUSABLE STOCK BAR ---
+        // Stock bars
         function drawStockBar(container, value, total, color) {
             const width = 300, height = 12;
             const svg = d3.select(container).append("svg").attr("width", "100%").attr("viewBox", `0 0 ${width} ${height}`);
             const x = d3.scaleLinear().domain([0, total]).range([0, width]);
-
             svg.append("rect").attr("width", width).attr("height", height).attr("fill", "#e2e8f0").attr("rx", 6);
             svg.append("rect").attr("width", 0).attr("height", height).attr("fill", color).attr("rx", 6)
                .transition().duration(1500).attr("width", x(value));
+            svg.append("text").attr("x", width - 8).attr("y", height - 2).attr("font-size", "7px").attr("fill", "#334155").attr("text-anchor", "end").text(`${value}/${total}`);
         }
         drawStockBar("#stock-bar-1", 12, 50, "#ef4444"); 
-        drawStockBar("#stock-bar-2", 42, 50, "#22c55e"); 
+        drawStockBar("#stock-bar-2", 42, 50, "#22c55e");
 
-        // --- 3. LIVE FEED LOGIC ---
+        // Live feed notifications
         const feedItems = [
             { user: "Abdul from Riyadh", product: "Smart Watch", img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100" },
             { user: "Sarah from London", product: "Headphones", img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100" },
-            { user: "Firas from Dubai", product: "Retro Camera", img: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=100" }
+            { user: "Firas from Dubai", product: "Retro Camera", img: "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=100" },
+            { user: "Mia from Tokyo", product: "Premium Smart Watch", img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100" },
+            { user: "Leo from Berlin", product: "Wireless Headphones", img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100" }
         ];
 
         function showNotification() {
             const item = feedItems[Math.floor(Math.random() * feedItems.length)];
             document.getElementById('feed-user').innerText = item.user;
-            document.getElementById('feed-msg').innerText = `just bought a ${item.product}`;
+            document.getElementById('feed-msg').innerHTML = `just bought a ${item.product} 🔥`;
             document.getElementById('feed-img').src = item.img;
-
             const toast = document.getElementById('live-feed');
             toast.classList.remove('d-none');
-            setTimeout(() => toast.classList.add('show-feed'), 100);
-
+            setTimeout(() => toast.classList.add('show-feed'), 30);
             setTimeout(() => {
                 toast.classList.remove('show-feed');
                 setTimeout(() => toast.classList.add('d-none'), 500);
             }, 5000);
         }
-        setInterval(showNotification, 12000);
-        setTimeout(showNotification, 3000);
+        setInterval(showNotification, 11000);
+        setTimeout(showNotification, 2000);
+
+        // Add to Cart functionality
+        const addToCartBtns = document.querySelectorAll('.add-to-cart-btn');
+        addToCartBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const card = this.closest('.card');
+                if (!card) return;
+                const productName = card.getAttribute('data-product-name') || card.querySelector('.card-title')?.innerText || 'Product';
+                const productPriceRaw = card.getAttribute('data-product-price') || card.querySelector('.h4')?.innerText.replace('$', '') || '0';
+                const productPrice = parseFloat(productPriceRaw);
+                
+                // Record in cookie
+                window.recordCartAction(productName, productPrice, 'add');
+                
+                // Visual feedback
+                const originalText = btn.innerText;
+                btn.innerText = '✓ Added!';
+                btn.classList.remove('btn-outline-dark');
+                btn.classList.add('btn-success');
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-outline-dark');
+                }, 1200);
+                
+                // Show temporary toast
+                const tempToast = document.createElement('div');
+                tempToast.className = 'position-fixed bottom-0 end-0 m-3 bg-dark text-white p-2 px-3 rounded-pill shadow';
+                tempToast.style.zIndex = '1090';
+                tempToast.style.fontSize = '0.85rem';
+                tempToast.innerText = `🛍️ ${productName} added to cart • Saved in your cookie`;
+                document.body.appendChild(tempToast);
+                setTimeout(() => tempToast.remove(), 2000);
+            });
+        });
+
+        // Auto-hide cookie banner
+        setTimeout(() => {
+            const banner = document.getElementById('cookieToast');
+            if (banner) {
+                banner.style.transition = 'opacity 0.5s';
+                banner.style.opacity = '0';
+                setTimeout(() => banner.style.display = 'none', 1000);
+            }
+        }, 4000);
+
+        console.log('✅ ProStore ready! Cookie system active. Open DevTools → Application → Cookies to see your data.');
     </script>
 </body>
 </html>
